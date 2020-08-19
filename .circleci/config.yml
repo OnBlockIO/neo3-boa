@@ -58,10 +58,17 @@ jobs:
   publish-docs: &build_deploy
     working_directory: ~/neo3-boa
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/python:3.6.4
     steps:
-      - attach_workspace:
-          at: ~/
+      - checkout
+
+      - run:
+          name: Setup Environment
+          command: |
+            python3 -m venv venv
+            source venv/bin/activate
+            sudo pip install -r requirements.txt
+            python3 setup.py install
       - run:
           name: install aws cli
           command: |
@@ -71,10 +78,6 @@ jobs:
       - run:
           name: Build and release docs
           command: |
-            python3 -m venv venv
-            source venv/bin/activate
-            sudo pip install -r requirements.txt
-            python3 setup.py install
             make publish-docs
 
 workflows:
