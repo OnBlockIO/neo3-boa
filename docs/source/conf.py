@@ -52,8 +52,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'neo3-boa'
-copyright = '2020, CoZ'
-author = 'CoZ'
+copyright = '0000, COZ'
+author = 'COZ'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

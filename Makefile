@@ -61,4 +61,8 @@ coverage: ## check code coverage quickly with the default Python
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
+	$(BROWSER) docs/build/html/index.html
+
+publish-docs:
+	$(MAKE) docs
+	aws s3 sync ./docs/build/html s3://docs-coz/neo3/boa --acl public-read

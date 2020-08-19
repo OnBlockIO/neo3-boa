@@ -55,6 +55,28 @@ jobs:
   build_deploy_prod:
     <<: *build_deploy
 
+ publish_docs: &build_deploy
+    working_directory: ~/neo3-boa
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: install aws cli
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Build and release docs
+          command: |
+            python3 -m venv venv
+            source venv/bin/activate
+            sudo pip install -r requirements.txt
+            python3 setup.py install
+            make publish-docs
+
 workflows:
   version: 2
   build_test_deploy:
@@ -90,3 +112,11 @@ workflows:
               only: /^v.*/
             branches:
               only: master
+  update-docs:
+    jobs:
+      - approve-update:
+          type: approval
+      - publish-docs:
+          context: aws
+          requires:
+            - setup-environment
