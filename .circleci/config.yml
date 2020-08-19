@@ -55,7 +55,7 @@ jobs:
   build_deploy_prod:
     <<: *build_deploy
 
- publish_docs: &build_deploy
+  publish_docs: &build_deploy
     working_directory: ~/neo3-boa
     docker:
       - image: circleci/python:3.8
