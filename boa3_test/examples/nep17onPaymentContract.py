@@ -1,15 +1,11 @@
 from typing import Any
 
 from boa3.builtin import NeoMetadata, metadata, public
+from boa3.builtin.interop.contract import NEO, GAS
+from boa3.builtin.interop.runtime import calling_script_hash, log
 from boa3.builtin.contract import abort
 from boa3.builtin.interop.runtime import check_witness, executing_script_hash
 from boa3.builtin.interop.storage import get, put
-from boa3.builtin.interop.crypto import hash160
-
-
-# -------------------------------------------
-# METADATA
-# -------------------------------------------
 
 
 @metadata
@@ -18,61 +14,32 @@ def manifest_metadata() -> NeoMetadata:
     Defines this smart contract's metadata information
     """
     meta = NeoMetadata()
-    meta.has_storage = True     # TODO: remove both attributions when test engine gets updated
-    meta.is_payable = True
     return meta
-
-
-# -------------------------------------------
-# TOKEN SETTINGS
-# -------------------------------------------
 
 
 # Script hash of the contract owner
 OWNER = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-
-# Script hash of this smart contract
-SMART_CONTRACT = executing_script_hash()
-SUPPLY_KEY = 'totalSupply'
-
-# Symbol of the accepted Token
-TOKEN_SYMBOL = 'NEP17'
-
-# Password that accepts a transfer to this address
-TRANSFER_PASSWORD = hash160('password')
-
-# Whether the contract was deployed or not
-DEPLOYED = 'deployed'
-
-
-# -------------------------------------------
-# Methods
-# -------------------------------------------
-
+NEO_BALANCE_KEY= "NEO"
+GAS_BALANCE_KEY= "GAS"
 
 @public
 def onPayment(from_address: bytes, amount: int, data: Any):
-    if not isinstance(data, list) or not (data[0] == TOKEN_SYMBOL) or not (hash160(data[1]) == TRANSFER_PASSWORD):
+    #Use the asset hash to identify what kind of token is coming
+    assetHash = calling_script_hash
+    if assetHash == NEO:
+        #Received NEO
+        log("Received NEO")
+        currentNeoBalance = get(NEO_BALANCE_KEY)
+        #This is an example. This is not needed
+        put(NEO_BALANCE_KEY, currentNeoBalance + amount)
+    elif assetHash == GAS:
+        #Receive GAS
+        log ("Received GAS")
+        currentGasBalance = get(GAS_BALANCE_KEY)
+        # This is an example. This is not needed
+        put(GAS_BALANCE_KEY, currentGasBalance + amount)
+    else:
         abort()
-
-
-def get_address() -> bytes:
-    """
-    Gets the script hash corresponding with this smart contract address
-    :return: this smart contract address
-    :rtype: bytes
-    """
-    return SMART_CONTRACT
-
-
-@public
-def get_balance() -> int:
-    """
-
-    :return:
-    :rtype: int
-    """
-    return get(SMART_CONTRACT).to_int()
 
 
 @public
@@ -85,21 +52,3 @@ def verify() -> bool:
     :return: whether the transaction signature is correct
     """
     return check_witness(OWNER)
-
-
-@public
-def deploy() -> bool:
-    """
-    Initializes the storage when the smart contract is deployed.
-
-    :return: whether the deploy was successful. This method must return True only during the smart contract's deploy.
-    """
-    if not check_witness(OWNER):
-        return False
-
-    if get(DEPLOYED).to_int() == 1:
-        return False
-
-    put(DEPLOYED, True)
-
-    return True
