@@ -2,6 +2,7 @@ from typing import Any
 
 from boa3.builtin import NeoMetadata, metadata, public
 from boa3.builtin.contract import Nep17TransferEvent
+from boa3.builtin.interop.blockchain import get_contract
 from boa3.builtin.interop.contract import call_contract
 from boa3.builtin.interop.runtime import calling_script_hash, check_witness
 from boa3.builtin.interop.storage import delete, get, put
@@ -170,12 +171,9 @@ def transfer(from_address: UInt160, to_address: UInt160, amount: int, data: Any)
 
 def post_transfer(from_address: UInt160, to_address: UInt160, amount: int, data: Any):
     if to_address is not None:
-        placeholder = 'foda b'
-        contract = get_contract(from_address)
-        '''
-        if get_contract(from_address) is not None:
-            call_contract(from_address, 'onPayment', [from_address, amount, data])
-            '''
+        contract = get_contract(to_address)
+        if(contract is not None):
+            call_contract(to_address, 'onPayment', [from_address, amount, data])
 
 
 @public
