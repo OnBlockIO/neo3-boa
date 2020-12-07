@@ -11,15 +11,15 @@ from boa3.builtin.interop.storage import delete, get, put
 # METADATA
 # -------------------------------------------
 
-
 @metadata
 def manifest_metadata() -> NeoMetadata:
     """
     Defines this smart contract's metadata information
     """
     meta = NeoMetadata()
-    meta.has_storage = True     # TODO: remove both attributions when test engine gets updated
-    meta.is_payable = True
+    meta.author = "COZ"
+    meta.description = "NEP-17 Example"
+    meta.email = "contact@coz.io"
     return meta
 
 
@@ -96,24 +96,20 @@ def totalSupply() -> int:
 
 
 @public
-def balanceOf(account: bytes) -> int:   # TODO: change bytes to hash160 when possible
+def balanceOf(account: UInt160) -> int:   # TODO: change bytes to hash160 when possible
     """
     Get the current balance of an address
 
-    The parameter account must be a 20-byte address.
+    The parameter account must be a 20-byte address represented by a UInt160.
 
     :param account: the account address to retrieve the balance for
     :type account: bytes
-
-    :return: the token balance of the `account`
-    :raise AssertionError: raised if `account` length is not 20.
     """
-    assert len(account) == 20   # Isso aqui não precisa se for hash160
-    return get(account).to_int()
+    return get(account.toBytes()).to_int()
 
 
 @public
-def transfer(from_address: bytes, to_address: bytes, amount: int, data: Any) -> bool:
+def transfer(from_address: UInt160, to_address: UInt160, amount: int, data: Any) -> bool:
     """
     Transfers an amount of NEP17 tokens from one account to another
 
@@ -172,9 +168,10 @@ def transfer(from_address: bytes, to_address: bytes, amount: int, data: Any) -> 
     return True
 
 
-def post_transfer(from_address: bytes, to_address: bytes, amount: int, data: Any):
+def post_transfer(from_address: UInt160, to_address: UInt160, amount: int, data: Any):
     if to_address is not None:
         placeholder = 'foda b'
+        contract = get_contract(from_address)
         '''
         if get_contract(from_address) is not None:
             call_contract(from_address, 'onPayment', [from_address, amount, data])
