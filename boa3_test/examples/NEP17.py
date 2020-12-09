@@ -11,6 +11,8 @@ from boa3.builtin.interop.storage import delete, get, put
 # -------------------------------------------
 # METADATA
 # -------------------------------------------
+from boa3.neo3.core.types import UInt160
+
 
 @metadata
 def manifest_metadata() -> NeoMetadata:
