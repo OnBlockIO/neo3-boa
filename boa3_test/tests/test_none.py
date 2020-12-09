@@ -99,3 +99,7 @@ class TestNone(BoaTest):
     def test_mismatched_type_after_reassign(self):
         path = '%s/boa3_test/test_sc/none_test/MismatchedTypesAfterReassign.py' % self.dirname
         self.assertCompilerLogs(MismatchedTypes, path)
+
+    def test_boa2_none_test(self):
+        path = '%s/boa3_test/test_sc/none_test/NoneBoa2Test.py' % self.dirname
+        self.assertCompilerLogs(MismatchedTypes, path)

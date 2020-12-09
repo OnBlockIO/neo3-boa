@@ -287,6 +287,48 @@ class TestList(BoaTest):
                                          expected_result_type=bool)
         self.assertEqual(True, result)
 
+    def test_boa2_list_test(self):
+        path = '%s/boa3_test/test_sc/list_test/ListBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 0)
+        self.assertEqual(1, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 1)
+        self.assertEqual(6, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 2)
+        self.assertEqual(3, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 4)
+        self.assertEqual(8, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 8)
+        self.assertEqual(9, result)
+
+    def test_boa2_list_test1(self):
+        path = '%s/boa3_test/test_sc/list_test/ListBoa2Test1.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(True, result)
+
+    def test_boa2_list_test2(self):
+        path = '%s/boa3_test/test_sc/list_test/ListBoa2Test2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(b'\xa0', result)
+
+    def test_boa2_list_test3(self):
+        path = '%s/boa3_test/test_sc/list_test/ListBoa2Test3.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual([1, 2, 3], result)
+
+    def test_boa2_list_test4(self):     # list(length=) DOESNT EXIST I NEED TO FIND A EQUIVALENT FUNCTION DO NOT COMMIT THIS
+        path = '%s/boa3_test/test_sc/list_test/ListBoa2Test4.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(3, result)
+
     @unittest.skip("get values from inner arrays is not working as expected")
     def test_list_of_list(self):
         expected_output = (
@@ -1049,6 +1091,29 @@ class TestList(BoaTest):
         path = '%s/boa3_test/test_sc/list_test/MismatchedTypeAppendWithBuiltin.py' % self.dirname
         self.assertCompilerLogs(MismatchedTypes, path)
 
+    def test_boa2_list_append_test(self):
+
+        path = '%s/boa3_test/test_sc/list_test/AppendBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual([6, 7], result)
+
+    def test_boa2_list_args_test(self):
+
+        path = '%s/boa3_test/test_sc/list_test/ArgsBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 'dostuff', ['unit', 'test'])
+        self.assertEqual(8, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'dostuff', ['unit test'])
+        self.assertEqual(23, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'dont', ['unit test'])
+        self.assertEqual(4, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'unit test', ['unit test'])
+        self.assertEqual(10, result)
+
     # endregion
 
     def test_list_clear(self):
@@ -1107,6 +1172,12 @@ class TestList(BoaTest):
         )
         output = Boa3.compile(path)
         self.assertEqual(expected_output, output)
+
+    def test_boa2_list_reverse_test(self):
+        path = '%s/boa3_test/test_sc/list_test/ReverseBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(['blah', 4, 2, 1], result)
 
     # region TestExtend
 
@@ -1347,5 +1418,11 @@ class TestList(BoaTest):
     def test_list_pop_too_many_arguments(self):
         path = '%s/boa3_test/test_sc/list_test/PopListTooManyArguments.py' % self.dirname
         self.assertCompilerLogs(UnexpectedArgument, path)
+
+    def test_boa2_list_pop_test(self):
+        path = '%s/boa3_test/test_sc/list_test/PopBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual([16, 3, 4], result)
 
     # endregion

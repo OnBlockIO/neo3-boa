@@ -921,3 +921,79 @@ class TestFunction(BoaTest):
     def test_call_function_with_kwargs(self):
         path = '%s/boa3_test/test_sc/function_test/CallFunctionWithKwargs.py' % self.dirname
         self.assertCompilerLogs(InternalError, path)
+
+    def test_boa2_fibonacci_test(self):
+        path = '%s/boa3_test/test_sc/function_test/FibonacciBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+
+        result = self.run_smart_contract(engine, path, 'main', 4)
+        self.assertEqual(3, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 5)
+        self.assertEqual(5, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 6)
+        self.assertEqual(8, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 7)
+        self.assertEqual(13, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 11)
+        self.assertEqual(89, result)
+
+    def test_boa2_method_test(self):
+        path = '%s/boa3_test/test_sc/function_test/MethodBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 1, 2)
+        self.assertEqual(7, result)
+
+        result = self.run_smart_contract(engine, path, 'main', -3, -100)
+        self.assertEqual(-99, result)
+
+    def test_boa2_method_test2(self):
+        path = '%s/boa3_test/test_sc/function_test/MethodBoa2Test2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(26, result)
+
+    def test_boa2_method_test3(self):
+        path = '%s/boa3_test/test_sc/function_test/MethodBoa2Test3.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(13, result)
+
+    def test_boa2_method_test4(self):
+        path = '%s/boa3_test/test_sc/function_test/MethodBoa2Test4.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(63, result)
+
+    def test_boa2_method_test5(self):
+        path = '%s/boa3_test/test_sc/function_test/MethodBoa2Test5.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(15, result)
+
+    def test_boa2_module_method_test1(self):
+        path = '%s/boa3_test/test_sc/function_test/ModuleMethodBoa2Test1.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(True, result)
+
+    def test_boa2_module_method_test2(self):
+        path = '%s/boa3_test/test_sc/function_test/ModuleMethodBoa2Test2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(3003, result)
+
+    def test_boa2_module_variable_test(self):
+        path = '%s/boa3_test/test_sc/function_test/ModuleVariableBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(1260, result)
+
+    def test_boa2_module_variable_test1(self):
+        path = '%s/boa3_test/test_sc/function_test/ModuleVariableBoa2Test1.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(8, result)

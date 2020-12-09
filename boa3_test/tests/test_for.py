@@ -451,3 +451,49 @@ class TestFor(BoaTest):
     def test_for_iterate_dict(self):
         path = '%s/boa3_test/test_sc/for_test/ForIterateDict.py' % self.dirname
         self.assertCompilerLogs(MismatchedTypes, path)
+
+    def test_boa2_iteration_test(self):
+        path = '%s/boa3_test/test_sc/for_test/IterBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(18, result)
+
+    def test_boa2_iteration_test2(self):
+        path = '%s/boa3_test/test_sc/for_test/IterBoa2Test2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(8, result)
+
+    def test_boa2_iteration_test3(self):
+        path = '%s/boa3_test/test_sc/for_test/IterBoa2Test3.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(7, result)
+
+    def test_boa2_iteration_test4(self):
+        path = '%s/boa3_test/test_sc/for_test/IterBoa2Test4.py' % self.dirname
+        self.assertCompilerLogs(MismatchedTypes, path)
+
+    def test_boa2_iteration_test5(self):
+        path = '%s/boa3_test/test_sc/for_test/IterBoa2Test5.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(51, result)
+
+    def test_boa2_iteration_test6(self):
+        path = '%s/boa3_test/test_sc/for_test/IterBoa2Test6.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(10, result)
+
+    def test_boa2_iteration_test7(self):
+        path = '%s/boa3_test/test_sc/for_test/IterBoa2Test7.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(12, result)
+
+    def test_boa2_iteration_test8(self):
+        path = '%s/boa3_test/test_sc/for_test/IterBoa2Test8.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(6, result)

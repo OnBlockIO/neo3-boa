@@ -530,3 +530,55 @@ class TestArithmetic(BoaTest):
         output = Boa3.compile(path)
 
         self.assertEqual(expected_output, output)
+
+    def test_boa2_add_test(self):
+        path = '%s/boa3_test/test_sc/arithmetic_test/AddBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 2)
+        self.assertEqual(4, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 23234)
+        self.assertEqual(23236, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 0)
+        self.assertEqual(2, result)
+
+        result = self.run_smart_contract(engine, path, 'main', -112)
+        self.assertEqual(-110, result)
+
+    def test_boa2_add_test1(self):
+        path = '%s/boa3_test/test_sc/arithmetic_test/AddBoa2Test1.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 1, 2, 3, 4)
+        self.assertEqual(9, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 0, 0, 0, 2)
+        self.assertEqual(2, result)
+
+        result = self.run_smart_contract(engine, path, 'main', -2, 3, -6, 2)
+        self.assertEqual(-2, result)
+
+    def test_boa2_add_test2(self):
+        path = '%s/boa3_test/test_sc/arithmetic_test/AddBoa2Test2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(3, result)
+
+    def test_boa2_add_test3(self):
+        path = '%s/boa3_test/test_sc/arithmetic_test/AddBoa2Test3.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(-9, result)
+
+    def test_boa2_add_test4(self):
+        path = '%s/boa3_test/test_sc/arithmetic_test/AddBoa2Test4.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 1, 2, 3, 4)
+        self.assertEqual(-9, result)
+
+    def test_boa2_add_test_void(self):
+        path = '%s/boa3_test/test_sc/arithmetic_test/AddBoa2TestVoid.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 3)
+        self.assertEqual(None, result)
+

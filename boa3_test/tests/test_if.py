@@ -429,3 +429,51 @@ class TestIf(BoaTest):
 
         result = self.run_smart_contract(engine, path, 'example', b'True')
         self.assertEqual(4, result)
+
+    def test_boa2_compare_test0(self):
+        path = '%s/boa3_test/test_sc/if_test/CompareBoa2Test0.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 2, 4)
+        self.assertEqual(2, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 4, 2)
+        self.assertEqual(3, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 2, 2)
+        self.assertEqual(2, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'b', 'a')
+        self.assertEqual(3, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'a', 'b')
+        self.assertEqual(2, result)
+
+    def test_boa2_compare_test1(self):
+        path = '%s/boa3_test/test_sc/if_test/CompareBoa2Test1.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 1, 2, 3, 4)
+        self.assertEqual(11, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 1, 2, 4, 3)
+        self.assertEqual(1, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 1, 4, 3, 5)
+        self.assertEqual(22, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 4, 1, 5, 3)
+        self.assertEqual(3, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 9, 1, 3, 5)
+        self.assertEqual(10, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 9, 5, 3, 5)
+        self.assertEqual(8, result)
+
+    def test_boa2_compare_test2(self):
+        path = '%s/boa3_test/test_sc/if_test/CompareBoa2Test2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 2, 2)
+        self.assertEqual(True, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 2, 3)
+        self.assertEqual(False, result)

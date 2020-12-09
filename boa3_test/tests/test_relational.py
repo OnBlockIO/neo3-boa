@@ -452,3 +452,31 @@ class TestRelational(BoaTest):
         result = self.run_smart_contract(engine, path, 'testing_something', bytes(20),
                                          expected_result_type=bool)
         self.assertEqual(True, result)
+
+    def test_boa2_equality_test(self):
+        path = '%s/boa3_test/test_sc/relational_test/Equality2Boa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 1)
+        self.assertEqual(False, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 2)
+        self.assertEqual(False, result)
+        # different result because str != bytearray in Python
+
+        result = self.run_smart_contract(engine, path, 'main', 3)
+        self.assertEqual(False, result)
+        # different result because str != bytes in Python
+
+        result = self.run_smart_contract(engine, path, 'main', 4)
+        self.assertEqual(True, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 5)
+        self.assertEqual(False, result)
+        # different result because 0 != '' in Python
+
+        result = self.run_smart_contract(engine, path, 'main', 6)
+        self.assertEqual(False, result)
+        # different result because False != '' in Python
+
+        result = self.run_smart_contract(engine, path, 'main', 7)
+        self.assertEqual(False, result)

@@ -242,3 +242,32 @@ class TestString(BoaTest):
     def test_string_slicing_omitted_with_stride(self):
         path = '%s/boa3_test/test_sc/string_test/StringSlicingOmittedWithStride.py' % self.dirname
         self.assertCompilerLogs(InternalError, path)
+
+    @unittest.skip("IndexError: pop from empty list, probably a TypeError")
+    def test_boa2_string_concatenation_test(self):
+        path = '%s/boa3_test/test_sc/string_test/ConcatBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual('helloworld', result)
+
+    def test_boa2_string_concatenation_test2(self):
+        path = '%s/boa3_test/test_sc/string_test/ConcatBoa2Test2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', 'concat', ['hello', 'world'])
+        self.assertEqual('helloworld', result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'blah', ['hello', 'world'])
+        self.assertEqual(False, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'concat', ['blah'])
+        self.assertEqual(False, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'concat', ['hello', 'world', 'third'])
+        self.assertEqual('helloworld', result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'concat', ['1', 'neo'])
+        self.assertEqual('1neo', result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'concat', ['', 'neo'])
+        self.assertEqual('neo', result)
+
