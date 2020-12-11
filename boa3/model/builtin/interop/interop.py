@@ -36,6 +36,7 @@ class Interop:
         return lst
 
     # Interop Types
+    BlockType = BlockType.build()
     ContractType = ContractType.build()
     Iterator = IteratorType.build()
     NotificationType = NotificationType.build()
@@ -52,6 +53,7 @@ class Interop:
 
     # Blockchain Interops
     CurrentHeight = CurrentHeightProperty()
+    GetBlock = GetBlockMethod(BlockType)
     GetContract = GetContractMethod(ContractType)
 
     # Contract Interops
@@ -108,7 +110,9 @@ class Interop:
                                 Deserialize,
                                 Serialize
                                 ],
-        InteropPackage.Blockchain: [CurrentHeight,
+        InteropPackage.Blockchain: [BlockType,
+                                    CurrentHeight,
+                                    GetBlock,
                                     GetContract
                                     ],
         InteropPackage.Contract: [CallContract,

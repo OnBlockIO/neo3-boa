@@ -325,6 +325,50 @@ class TestInterop(BoaTest):
         output = Boa3.compile(path)
         self.assertEqual(expected_output, output)
 
+    def test_block_type(self):
+        path = '%s/boa3_test/test_sc/interop_test/BlockType.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(8, len(result))
+        for k in range(len(result)):
+            if isinstance(result[k], str):
+                result[k] = String(result[k]).to_bytes()
+        self.assertEqual(b'', result[0])
+        self.assertEqual(0, result[1])
+        self.assertEqual(b'', result[2])
+        self.assertEqual(b'', result[3])
+        self.assertEqual(0, result[4])
+        self.assertEqual(0, result[5])
+        self.assertEqual(bytes(20), result[6])
+        self.assertEqual(0, result[7])
+
+    def test_get_block(self):
+        expected_output = (
+            Opcode.INITSLOT
+            + b'\x00\x01'
+            + Opcode.LDARG0
+            + Opcode.SYSCALL
+            + Interop.GetBlock.interop_method_hash
+            + Opcode.RET
+        )
+        path = '%s/boa3_test/test_sc/interop_test/GetBlock.py' % self.dirname
+        output = Boa3.compile(path)
+        self.assertEqual(expected_output, output)
+
+        engine = TestEngine(self.dirname)
+        from boa3_test.tests.test_classes.block import Block
+        test_block = Block(10)
+        engine.add_block(test_block)
+
+        result = self.run_smart_contract(engine, path, 'main', 12345)
+        self.assertEqual(None, result)
+
+        result = self.run_smart_contract(engine, path, 'main', bytes(256))
+        self.assertEqual(None, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 10)
+        self.assertEqual(test_block, result)
+
     def test_get_contract(self):
         expected_output = (
             Opcode.INITSLOT
