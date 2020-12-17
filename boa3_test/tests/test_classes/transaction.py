@@ -45,3 +45,6 @@ class Transaction:
         copied = Transaction(self._script, self._signers, self._witnesses)
         copied._hash = self._hash
         return copied
+
+    def get_hash(self):
+        return self._hash

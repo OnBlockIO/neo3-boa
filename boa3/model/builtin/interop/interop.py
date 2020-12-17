@@ -40,6 +40,7 @@ class Interop:
     Iterator = IteratorType.build()
     NotificationType = NotificationType.build()
     StorageContextType = StorageContextType.build()
+    TransactionType = TransactionType.build()
     TriggerType = TriggerType()
 
     # Binary Interops
@@ -53,6 +54,9 @@ class Interop:
     # Blockchain Interops
     CurrentHeight = CurrentHeightProperty()
     GetContract = GetContractMethod(ContractType)
+    GetTransaction = GetTransactionMethod(TransactionType)
+    GetTransactionFromBlock = GetTransactionFromBlockMethod(TransactionType)
+    GetTransactionHeight = GetTransactionHeightMethod()
 
     # Contract Interops
     CallContract = CallMethod()
@@ -109,7 +113,11 @@ class Interop:
                                 Serialize
                                 ],
         InteropPackage.Blockchain: [CurrentHeight,
-                                    GetContract
+                                    GetContract,
+                                    GetTransaction,
+                                    GetTransactionFromBlock,
+                                    GetTransactionHeight,
+                                    TransactionType
                                     ],
         InteropPackage.Contract: [CallContract,
                                   ContractType,

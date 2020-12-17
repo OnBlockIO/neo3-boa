@@ -57,3 +57,6 @@ class Block:
             block._hash = UInt256(from_hex_str(json['hash']))
 
         return block
+
+    def get_hash(self):
+        return self._hash

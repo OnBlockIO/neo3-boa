@@ -366,6 +366,235 @@ class TestInterop(BoaTest):
         self.assertEqual(script, result[3])
         self.assertEqual(json.loads(arg_manifest), json.loads(result[4]))
 
+    def test_transaction_type(self):
+        expected_output = (
+                Opcode.PUSHDATA1
+                + Integer(0).to_byte_array(min_length=1)
+                + Opcode.PUSH0
+                + Opcode.PUSH0
+                + Opcode.PUSH0
+                + Opcode.PUSHDATA1
+                + Integer(20).to_byte_array()
+                + bytes(20)
+                + Opcode.PUSH0
+                + Opcode.PUSHDATA1
+                + Integer(0).to_byte_array(min_length=1)
+                + Opcode.PUSHDATA1
+                + Integer(0).to_byte_array(min_length=1)
+                + Opcode.PUSH8
+                + Opcode.PACK
+                + Opcode.RET
+        )
+
+        path = '%s/boa3_test/test_sc/interop_test/TransactionType.py' % self.dirname
+        output = Boa3.compile(path)
+        self.assertEqual(expected_output, output)
+
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(8, len(result))
+        for k in range(len(result)):
+            if isinstance(result[k], str):
+                result[k] = String(result[k]).to_bytes()
+        # This is the hash attribute
+        self.assertEqual(b'', result[0])
+        # This is the version attribute
+        self.assertEqual(b'', result[1])
+        # This is the nonce attribute
+        self.assertEqual(0, result[2])
+        # This is the sender attribute
+        self.assertEqual(bytes(20), result[3])
+        # This is the system_fee attribute
+        self.assertEqual(0, result[4])
+        # This is the network_fee attribute
+        self.assertEqual(0, result[5])
+        # This is the valid_until_block attribute
+        self.assertEqual(0, result[6])
+        # This is the script attribute
+        self.assertEqual(b'', result[7])
+
+    def test_get_transaction(self):
+        expected_output = (
+            Opcode.INITSLOT
+            + b'\x00'
+            + b'\x01'
+            + Opcode.LDARG0
+            + Opcode.SYSCALL
+            + Interop.GetTransaction.interop_method_hash
+            + Opcode.RET
+        )
+
+        path = '%s/boa3_test/test_sc/interop_test/GetTransaction.py' % self.dirname
+        output = Boa3.compile(path)
+        self.assertEqual(expected_output, output)
+
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', bytes(32))
+        self.assertEqual(None, result)
+
+        from boa3_test.tests.test_classes.transaction import Transaction
+        transaction: Transaction = engine.get_transactions()[0]
+        trans_hash = transaction.get_hash()
+
+        engine.add_transaction(transaction)
+
+        result = self.run_smart_contract(engine, path, 'main', trans_hash)
+        self.assertEqual(8, len(result))
+        for k in range(len(result)):
+            if isinstance(result[k], str):
+                result[k] = String(result[k]).to_bytes()
+        """# This is the hash attribute
+        self.assertEqual(b'', result[0])
+        # This is the version attribute
+        self.assertEqual(b'', result[1])
+        # This is the nonce attribute
+        self.assertEqual(0, result[2])
+        # This is the sender attribute
+        self.assertEqual(bytes(20), result[3])
+        # This is the system_fee attribute
+        self.assertEqual(0, result[4])
+        # This is the network_fee attribute
+        self.assertEqual(0, result[5])
+        # This is the valid_until_block attribute
+        self.assertEqual(0, result[6])
+        # This is the script attribute
+        self.assertEqual(b'', result[7])"""
+
+    def test_get_transaction_from_block_bytes(self):
+        expected_output = (
+            Opcode.INITSLOT
+            + b'\x00'
+            + b'\x02'
+            + Opcode.LDARG1
+            + Opcode.LDARG0
+            + Opcode.SYSCALL
+            + Interop.GetTransactionFromBlock.interop_method_hash
+            + Opcode.RET
+        )
+
+        path = '%s/boa3_test/test_sc/interop_test/GetTransactionFromBlockBytes.py' % self.dirname
+        output = Boa3.compile(path)
+        self.assertEqual(expected_output, output)
+
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', bytes(32), 0)
+        self.assertEqual(None, result)
+
+        from boa3_test.tests.test_classes.transaction import Transaction
+        transaction: Transaction = engine.get_transactions()[0]
+
+        from boa3_test.tests.test_classes.block import Block
+        block = Block(10)
+        block.add_transaction(transaction)
+        block_hash = block.get_hash()
+
+        engine.add_block(block)
+
+        result = self.run_smart_contract(engine, path, 'main', block_hash, 0)
+        self.assertEqual(8, len(result))
+        for k in range(len(result)):
+            if isinstance(result[k], str):
+                result[k] = String(result[k]).to_bytes()
+        """
+        # This is the hash attribute
+        self.assertEqual(b'', result[0])
+        # This is the version attribute
+        self.assertEqual(b'', result[1])
+        # This is the nonce attribute
+        self.assertEqual(0, result[2])
+        # This is the sender attribute
+        self.assertEqual(bytes(20), result[3])
+        # This is the system_fee attribute
+        self.assertEqual(0, result[4])
+        # This is the network_fee attribute
+        self.assertEqual(0, result[5])
+        # This is the valid_until_block attribute
+        self.assertEqual(0, result[6])
+        # This is the script attribute
+        self.assertEqual(b'', result[7])"""
+
+    def test_get_transaction_from_block_int(self):
+        expected_output = (
+            Opcode.INITSLOT
+            + b'\x00'
+            + b'\x02'
+            + Opcode.LDARG1
+            + Opcode.LDARG0
+            + Opcode.SYSCALL
+            + Interop.GetTransactionFromBlock.interop_method_hash
+            + Opcode.RET
+        )
+
+        path = '%s/boa3_test/test_sc/interop_test/GetTransactionFromBlockInt.py' % self.dirname
+        output = Boa3.compile(path)
+        self.assertEqual(expected_output, output)
+
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', bytes(32), 0)
+        self.assertEqual(None, result)
+
+        from boa3_test.tests.test_classes.transaction import Transaction
+        transaction: Transaction = engine.get_transactions()[0]
+
+        from boa3_test.tests.test_classes.block import Block
+        block = Block(10)
+        block.add_transaction(transaction)
+
+        engine.add_block(block)
+
+        result = self.run_smart_contract(engine, path, 'main', 0, 0)
+        self.assertEqual(8, len(result))
+        for k in range(len(result)):
+            if isinstance(result[k], str):
+                result[k] = String(result[k]).to_bytes()
+        """
+        # This is the hash attribute
+        self.assertEqual(b'', result[0])
+        # This is the version attribute
+        self.assertEqual(b'', result[1])
+        # This is the nonce attribute
+        self.assertEqual(0, result[2])
+        # This is the sender attribute
+        self.assertEqual(bytes(20), result[3])
+        # This is the system_fee attribute
+        self.assertEqual(0, result[4])
+        # This is the network_fee attribute
+        self.assertEqual(0, result[5])
+        # This is the valid_until_block attribute
+        self.assertEqual(0, result[6])
+        # This is the script attribute
+        self.assertEqual(b'', result[7])"""
+
+    def test_get_transaction_height(self):
+        expected_output = (
+                Opcode.INITSLOT
+                + b'\x00'
+                + b'\x01'
+                + Opcode.LDARG0
+                + Opcode.SYSCALL
+                + Interop.GetTransactionHeight.interop_method_hash
+                + Opcode.RET
+        )
+
+        path = '%s/boa3_test/test_sc/interop_test/GetTransactionHeight.py' % self.dirname
+        output = Boa3.compile(path)
+        self.assertEqual(expected_output, output)
+
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main', bytes(32))
+        # It's -1, because transaction is None
+        self.assertEqual(-1, result)
+
+        from boa3_test.tests.test_classes.transaction import Transaction
+        transaction: Transaction = engine.get_transactions()[0]
+        trans_hash = transaction.get_hash()
+
+        engine.add_transaction(transaction)
+
+        # ERRADO, ESPERAR A TRANSACTION VOLTAR
+        result = self.run_smart_contract(engine, path, 'main', trans_hash)
+        self.assertEqual(0, result)
+
     # endregion
 
     # region Contract
