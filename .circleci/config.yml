@@ -18,9 +18,13 @@ jobs:
             sudo pip install -r requirements_dev.txt
 
       - run:
-          name: Run autopep8
+          name: Run lint
           command: |
-            autopep8 -r -d -a -a .
+            changed_files=`autopep8 -r -d -a -a .` || true
+            if [ -n "$changed_files" ]; then
+              exit 1
+            fi
+
       - python/save-cache
       - run:
           name: Test
