@@ -17,6 +17,10 @@ jobs:
           command: |
             sudo pip install -r requirements_dev.txt
 
+      - run:
+          name: Run autopep8
+          command: |
+            autopep8 -r -d -a -a .
       - python/save-cache
       - run:
           name: Test
