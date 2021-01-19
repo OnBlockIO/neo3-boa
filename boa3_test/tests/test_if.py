@@ -477,3 +477,49 @@ class TestIf(BoaTest):
 
         result = self.run_smart_contract(engine, path, 'main', 2, 3)
         self.assertEqual(False, result)
+
+    def test_boa2_op_call_test(self):
+        path = '%s/boa3_test/test_sc/if_test/OpCallBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+
+        result = self.run_smart_contract(engine, path, 'main', 'omin', 4, 4)
+        self.assertEqual(4, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'omin', -4, 4)
+        self.assertEqual(-4, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'omin',16, 0)
+        self.assertEqual(0, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'omax', 4, 4)
+        self.assertEqual(4, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'omax', -4, 4)
+        self.assertEqual(4, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'omax', 16, 0)
+        self.assertEqual(16, result)
+
+        from boa3.neo.cryptography import sha256, hash160
+        from boa3.neo.vm.type.String import String
+        result = self.run_smart_contract(engine, path, 'main', 'sha256', 'abc', 4)
+        self.assertEqual(sha256(String('abc').to_bytes()), result)
+
+        result = self.run_smart_contract(engine, path, 'main', 'hash160', 'abc', 4)
+        self.assertEqual(hash160(String('abc').to_bytes()), result)
+
+    def test_boa2_test_many_elif(self):
+        path = '%s/boa3_test/test_sc/if_test/TestManyElifBoa2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+
+        result = self.run_smart_contract(engine, path, 'main', 1)
+        self.assertEqual(2, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 3)
+        self.assertEqual(4, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 16)
+        self.assertEqual(17, result)
+
+        result = self.run_smart_contract(engine, path, 'main', 22)
+        self.assertEqual(-1, result)

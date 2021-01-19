@@ -224,3 +224,13 @@ class TestAssert(BoaTest):
         engine = TestEngine(self.dirname)
         result = self.run_smart_contract(engine, path, 'Main', True)
         self.assertIsVoid(result)
+
+    def test_boa2_throw_test(self):
+        path = '%s/boa3_test/test_sc/assert_test/ThrowBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+
+        result = self.run_smart_contract(engine, path, 'main', 1)
+        self.assertEqual(True, result)
+
+        with self.assertRaises(TestExecutionException, msg=self.ASSERT_RESULTED_FALSE_MSG):
+            self.run_smart_contract(engine, path, 'main', 4)

@@ -480,24 +480,36 @@ class TestBytes(BoaTest):
         result = self.run_smart_contract(engine, path, 'bytes_to_int')
         self.assertEqual(513, result)
 
-    @unittest.skip("It's not returning a empty bytearray when you do a[2:1]")
-    def test_boa2_byte_array_test(self):    # TODO: Verify why it won't compile a[Bigger value: Lesser value]
+    @unittest.skip("slice is broken")
+    def test_boa2_byte_array_test(self):
         path = '%s/boa3_test/test_sc/bytes_test/BytearrayBoa2Test.py' % self.dirname
         engine = TestEngine(self.dirname)
         result = self.run_smart_contract(engine, path, 'main')
         self.assertEqual(b'\t\x01\x02\xaf\t', result)
 
-    @unittest.skip("get type at slices isn't working as intended")
-    def test_boa2_byte_array_test2(self):   # TODO: Fix get type at slices
+    @unittest.skip("slice is broken")
+    def test_boa2_byte_array_test2(self):
         path = '%s/boa3_test/test_sc/bytes_test/BytearrayBoa2Test2.py' % self.dirname
         engine = TestEngine(self.dirname)
         result = self.run_smart_contract(engine, path, 'main', b'abcefghi', b'zyxwvutrs')
         self.assertEqual(TypeError, result)
 
-    @unittest.skip("pretty sure, it's the same error that happened at test_boa2_byte_array_test2")
     def test_boa2_byte_array_test3(self):
         path = '%s/boa3_test/test_sc/bytes_test/BytearrayBoa2Test3.py' % self.dirname
         engine = TestEngine(self.dirname)
         result = self.run_smart_contract(engine, path, 'main')
         self.assertEqual(b'\x01\x02\xaa\xfe', result)
 
+    @unittest.skip("slice is broken")
+    def test_boa2_slice_test(self):
+        path = '%s/boa3_test/test_sc/bytes_test/SliceBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(b'\x01\x02\x03\x04', result)
+
+    @unittest.skip("slice is broken")
+    def test_boa2_slice_test2(self):
+        path = '%s/boa3_test/test_sc/bytes_test/SliceBoa2Test2.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(b'\x02\x03\x04\x02\x03\x04\x05\x06\x01\x02\x03\x04\x03\x04', result)

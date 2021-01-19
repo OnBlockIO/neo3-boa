@@ -1095,3 +1095,9 @@ class TestRange(BoaTest):
     def test_range_slicing_omitted_with_stride(self):
         path = '%s/boa3_test/test_sc/range_test/RangeSlicingOmittedWithStride.py' % self.dirname
         self.assertCompilerLogs(InternalError, path)
+
+    def test_boa2_range_test(self):
+        path = '%s/boa3_test/test_sc/range_test/RangeBoa2Test.py' % self.dirname
+        engine = TestEngine(self.dirname)
+        result = self.run_smart_contract(engine, path, 'main')
+        self.assertEqual(list(range(100, 120)), result)
