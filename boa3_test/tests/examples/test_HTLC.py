@@ -62,7 +62,7 @@ class TestHTLCTemplate(BoaTest):
     def test_HTLC_onPayment(self):
         path = self.get_contract_path('HTLC.py')
         engine = TestEngine()
-        example_contract = self.get_contract_path('test_native/example_contract_for_htlc.py')
+        example_contract = self.get_contract_path('auxiliary_contracts/example_contract_for_htlc.py')
         transferred_amount_neo = 10 * 10**8
         transferred_amount_gas = 10000 * 10**8
 
@@ -95,7 +95,7 @@ class TestHTLCTemplate(BoaTest):
     def test_HTLC_withdraw(self):
         path = self.get_contract_path('HTLC.py')
         engine = TestEngine()
-        example_contract = self.get_contract_path('test_native/example_contract_for_htlc.py')
+        example_contract = self.get_contract_path('auxiliary_contracts/example_contract_for_htlc.py')
         transferred_amount_neo = 10 * 10**8
         transferred_amount_gas = 10000 * 10**8
 
@@ -134,7 +134,7 @@ class TestHTLCTemplate(BoaTest):
     def test_HTLC_refund(self):
         path = self.get_contract_path('HTLC.py')
         engine = TestEngine()
-        example_contract = self.get_contract_path('test_native/example_contract_for_htlc.py')
+        example_contract = self.get_contract_path('auxiliary_contracts/example_contract_for_htlc.py')
         transferred_amount_neo = 10 * 10**8
         transferred_amount_gas = 10000 * 10**8
 
