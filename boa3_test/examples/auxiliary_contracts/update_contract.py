@@ -20,6 +20,7 @@ def manifest_metadata() -> NeoMetadata:
     meta.author = "Mirella Medeiros, Ricardo Prado and Lucas Uezu. COZ in partnership with Simpli"
     meta.description = "Update Example"
     meta.email = "contact@coz.io"
+    # has_storage and meta.is_payable were removed from this updated smart contract
     return meta
 
 
@@ -27,8 +28,10 @@ def manifest_metadata() -> NeoMetadata:
 # SETTINGS
 # -------------------------------------------
 
+# Owner's address
 OWNER = UInt160()
-PREFIX_STORAGE = b'storage'
+# Storage's key
+STORAGE_KEY = b'storage'
 
 
 # -------------------------------------------
@@ -53,9 +56,9 @@ def deploy() -> bool:
     """
     if not check_witness(OWNER):
         return False
-    if get(PREFIX_STORAGE) != b'':
+    if get(STORAGE_KEY) != b'':
         return False
-    put(PREFIX_STORAGE, b'deployed')
+    put(STORAGE_KEY, b'deployed')
     return True
 
 
@@ -70,9 +73,22 @@ def onNEP17Payment(from_address: UInt160, amount: int, data: Any):
 
 @public
 def put_storage(value: bytes):
-    put(PREFIX_STORAGE, value)
+    """
+    Puts a value in the storage using the only key available.
+
+    :param value: the value that will be put in the storage
+    :type value: bytes
+    """
+    put(STORAGE_KEY, value)
 
 
 @public
 def get_storage() -> bytes:
-    return get(PREFIX_STORAGE)
+    """
+    Gets the only value stored in the storage. This function is used to show that the storage will change after the
+    update.
+
+    :return: the value stored in the storage
+    :rtype: bytes
+    """
+    return get(STORAGE_KEY)

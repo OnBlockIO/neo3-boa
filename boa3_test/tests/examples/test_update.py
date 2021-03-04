@@ -1,11 +1,14 @@
+import json
+
 from boa3.boa3 import Boa3
 from boa3.neo import to_script_hash
 from boa3_test.tests.boa_test import BoaTest
 from boa3_test.tests.test_classes.testengine import TestEngine
 from boa3_test.tests.test_classes.TestExecutionException import TestExecutionException
+from boa3.neo.vm.type.String import String
 
 
-class TestUpdateTemplate(BoaTest):
+class TestTemplate(BoaTest):
 
     default_folder: str = 'examples'
 
@@ -73,48 +76,15 @@ class TestUpdateTemplate(BoaTest):
                                          expected_result_type=bool)
         self.assertEqual(False, result)
 
-    def test_update_storage(self):
-        path_old = self.get_contract_path('update_contract.py')
-        path_new = self.get_contract_path('examples/auxiliary_contracts', 'update_contract.py')
-        engine = TestEngine()
-
-        result = self.run_smart_contract(engine, path_old, 'get_storage',
-                                         signer_accounts=[self.OWNER_SCRIPT_HASH], expected_result_type=bytes)
-        self.assertEqual(b'', result)
-
-        expected_result = b'neo_boa'
-        result = self.run_smart_contract(engine, path_old, 'put_storage', expected_result,
-                                         signer_accounts=[self.OWNER_SCRIPT_HASH])
-        self.assertIsVoid(result)
-
-        result = self.run_smart_contract(engine, path_old, 'get_storage',
-                                         signer_accounts=[self.OWNER_SCRIPT_HASH], expected_result_type=bytes)
-        self.assertEqual(expected_result, result)
-
-        result = self.run_smart_contract(engine, path_new, 'get_storage',
-                                         signer_accounts=[self.OWNER_SCRIPT_HASH], expected_result_type=bytes)
-        self.assertEqual(b'', result)
-
-        expected_result = b'neo_boa'
-        result = self.run_smart_contract(engine, path_new, 'put_storage', expected_result,
-                                         signer_accounts=[self.OWNER_SCRIPT_HASH])
-        self.assertIsVoid(result)
-
-        result = self.run_smart_contract(engine, path_new, 'get_storage',
-                                         signer_accounts=[self.OWNER_SCRIPT_HASH], expected_result_type=bytes)
-        self.assertEqual(expected_result, result)
-
     def test_update_update(self):
         path_old = self.get_contract_path('update_contract.py')
         path_new = self.get_contract_path('examples/auxiliary_contracts', 'update_contract.py')
         engine = TestEngine()
 
         nef, manifest = self.get_bytes_output(path_new)
-        import json
-        from boa3.neo.vm.type.String import String
         arg_manifest = String(json.dumps(manifest, separators=(',', ':'))).to_bytes()
 
-        # deploying the contract with outdated standard
+        # deploying the contract with the outdated standard
         result = self.run_smart_contract(engine, path_old, 'deploy',
                                          signer_accounts=[self.OWNER_SCRIPT_HASH],
                                          expected_result_type=bool)
@@ -124,6 +94,11 @@ class TestUpdateTemplate(BoaTest):
         with self.assertRaises(TestExecutionException, msg=self.CALLED_CONTRACT_DOES_NOT_EXIST_MSG):
             self.run_smart_contract(engine, path_old, 'onNEP17Payment',
                                     signer_accounts=[self.OWNER_SCRIPT_HASH])
+
+        # calling update will raise an exception, because it's not the owner that is calling
+        with self.assertRaises(TestExecutionException, msg=self.ASSERT_RESULTED_FALSE_MSG):
+            self.run_smart_contract(engine, path_old, 'update', nef, arg_manifest,
+                                    signer_accounts=[self.OTHER_ACCOUNT_1])
 
         # updating the contract with the new standard
         result = self.run_smart_contract(engine, path_old, 'update', nef, arg_manifest,
@@ -135,3 +110,44 @@ class TestUpdateTemplate(BoaTest):
         result = self.run_smart_contract(engine, path_old, 'onNEP17Payment',
                                          signer_accounts=[self.OWNER_SCRIPT_HASH])
         self.assertEqual(True, result)
+
+    def test_update_storage(self):
+        path_old = self.get_contract_path('update_contract.py')
+        path_new = self.get_contract_path('examples/auxiliary_contracts', 'update_contract.py')
+        engine = TestEngine()
+
+        nef, manifest = self.get_bytes_output(path_new)
+        arg_manifest = String(json.dumps(manifest, separators=(',', ':'))).to_bytes()
+
+        # deploying the contract with the outdated standard
+        result = self.run_smart_contract(engine, path_old, 'deploy',
+                                         signer_accounts=[self.OWNER_SCRIPT_HASH],
+                                         expected_result_type=bool)
+        self.assertEqual(True, result)
+
+        # after deploying the value stored should be b'deployed'
+        result = self.run_smart_contract(engine, path_old, 'get_storage',
+                                         signer_accounts=[self.OWNER_SCRIPT_HASH], expected_result_type=bytes)
+        self.assertEqual(b'deployed', result)
+
+        # changing the value stored to b'neo_boa'
+        stored_value = b'neo_boa'
+        result = self.run_smart_contract(engine, path_old, 'put_storage', stored_value,
+                                         signer_accounts=[self.OWNER_SCRIPT_HASH])
+        self.assertIsVoid(result)
+
+        # checking if it really changed
+        result = self.run_smart_contract(engine, path_old, 'get_storage',
+                                         signer_accounts=[self.OWNER_SCRIPT_HASH], expected_result_type=bytes)
+        self.assertEqual(stored_value, result)
+
+        # updating the contract with the new standard
+        result = self.run_smart_contract(engine, path_old, 'update', nef, arg_manifest,
+                                         signer_accounts=[self.OWNER_SCRIPT_HASH],
+                                         expected_result_type=bool)
+        self.assertEqual(True, result)
+
+        # checking if it it's the same storage after updating the smart contract
+        result = self.run_smart_contract(engine, path_new, 'get_storage',
+                                         signer_accounts=[self.OWNER_SCRIPT_HASH], expected_result_type=bytes)
+        self.assertEqual(stored_value, result)
