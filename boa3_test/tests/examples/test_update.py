@@ -92,7 +92,7 @@ class TestTemplate(BoaTest):
 
         # calling onNEP17Payment will result in a exception, because this method is not in the smart contract
         with self.assertRaises(TestExecutionException, msg=self.CALLED_CONTRACT_DOES_NOT_EXIST_MSG):
-            self.run_smart_contract(engine, path_old, 'onNEP17Payment',
+            self.run_smart_contract(engine, path_old, 'onNEP17Payment', self.OWNER_SCRIPT_HASH, 0, None,
                                     signer_accounts=[self.OWNER_SCRIPT_HASH])
 
         # calling update will raise an exception, because it's not the owner that is calling
@@ -102,14 +102,13 @@ class TestTemplate(BoaTest):
 
         # updating the contract with the new standard
         result = self.run_smart_contract(engine, path_old, 'update', nef, arg_manifest,
-                                         signer_accounts=[self.OWNER_SCRIPT_HASH],
-                                         expected_result_type=bool)
-        self.assertEqual(True, result)
+                                         signer_accounts=[self.OWNER_SCRIPT_HASH])
+        self.assertIsVoid(result)
 
         # the contract was updated, but the path still is same
-        result = self.run_smart_contract(engine, path_old, 'onNEP17Payment',
+        result = self.run_smart_contract(engine, path_old, 'onNEP17Payment', self.OWNER_SCRIPT_HASH, 0, None,
                                          signer_accounts=[self.OWNER_SCRIPT_HASH])
-        self.assertEqual(True, result)
+        self.assertIsVoid(result)
 
     def test_update_storage(self):
         path_old = self.get_contract_path('update_contract.py')
@@ -148,6 +147,6 @@ class TestTemplate(BoaTest):
         self.assertEqual(True, result)
 
         # checking if it it's the same storage after updating the smart contract
-        result = self.run_smart_contract(engine, path_new, 'get_storage',
+        result = self.run_smart_contract(engine, path_old, 'get_storage',
                                          signer_accounts=[self.OWNER_SCRIPT_HASH], expected_result_type=bytes)
         self.assertEqual(stored_value, result)
