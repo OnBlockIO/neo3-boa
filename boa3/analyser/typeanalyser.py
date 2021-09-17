@@ -1034,9 +1034,6 @@ class TypeAnalyser(IAstAnalyser, ast.NodeVisitor):
 
             if callable_target is Builtin.NewEvent:
                 return callable_target.return_type
-            # TODO: change when kwargs is implemented
-            if len(call.keywords) > 0:
-                raise NotImplementedError
 
             private_identifier = None  # used for validating internal builtin methods
             if self.validate_callable_arguments(call, callable_target):
@@ -1196,15 +1193,51 @@ class TypeAnalyser(IAstAnalyser, ast.NodeVisitor):
 
         ignore_first_argument = int(callable_target.has_cls_or_self)  # 1 if True, 0 otherwise
         len_call_args = len(call.args)
+        len_call_keywords = len(call.keywords)
         callable_required_args = len(callable_target.args_without_default) - ignore_first_argument
 
-        if len_call_args > len(callable_target.args):
-            unexpected_arg = call.args[len(callable_target.args) + ignore_first_argument]
+        # verifies if a non-default arg is being called as a keyword
+        necessary_kwars = list(callable_target.args_without_default.keys())[len_call_args:callable_required_args]
+        keywords_names_used = []
+        all_required_arg_have_values = True
+        for keyword in call.keywords:
+            keywords_names_used.append(keyword.arg)
+        for kwarg in necessary_kwars:
+            if kwarg not in keywords_names_used:
+                all_required_arg_have_values = False
+
+        # verifies if a kwarg is being used but is not an argument for the function
+        index = 0
+        unexpected_kwarg = None
+        while unexpected_kwarg is None and index < len(call.keywords):
+            if call.keywords[index].arg not in list(callable_target.args.keys()):
+                unexpected_kwarg = call.keywords[index].value
+            index += 1
+
+        # verifies if a kwarg that was already used as a positional argument is being used again
+        implicit_args = list(callable_target.args_without_default.keys())[:len_call_args]
+        index = 0
+        already_called_arg = None
+        kwargs_used_names = []
+        for keyword in call.keywords:
+            kwargs_used_names.append(keyword.arg)
+        while already_called_arg is None and index < len(implicit_args):
+            if implicit_args[index] in kwargs_used_names:
+                already_called_arg = call.keywords[index].value
+            index += 1
+
+        if len_call_args > len(callable_target.args) or unexpected_kwarg is not None or already_called_arg is not None:
+            if unexpected_kwarg is not None:
+                unexpected_arg = unexpected_kwarg
+            elif already_called_arg is not None:
+                unexpected_arg = already_called_arg
+            else:
+                unexpected_arg = call.args[len(callable_target.args) + ignore_first_argument]
             self._log_error(
                 CompilerError.UnexpectedArgument(unexpected_arg.lineno, unexpected_arg.col_offset)
             )
             return False
-        elif len_call_args < callable_required_args:
+        elif len_call_args + len_call_keywords < callable_required_args or not all_required_arg_have_values:
             missed_arg = list(callable_target.args)[len(call.args) + ignore_first_argument]
             self._log_error(
                 CompilerError.UnfilledArgument(call.lineno, call.col_offset, missed_arg)
@@ -1231,10 +1264,26 @@ class TypeAnalyser(IAstAnalyser, ast.NodeVisitor):
                 return
 
         ignore_first_argument = int(callable.has_cls_or_self)  # 1 if True, 0 otherwise
+
+        # validate positional parameters
         for index, param in enumerate(call.args):
             (arg_id, arg_value) = list(callable.args.items())[index + ignore_first_argument]
 
             param_type = self.get_type(param, use_metatype=True)
+            args_types.append(param_type)
+            if not arg_value.type.is_type_of(param_type):
+                self._log_error(
+                    CompilerError.MismatchedTypes(
+                        param.lineno, param.col_offset,
+                        arg_value.type.identifier,
+                        param_type.identifier
+                    ))
+
+        # validate keyword arguments
+        for param in call.keywords:
+            arg_value = callable.args[param.arg]
+            param = param.value
+            param_type = self.get_type(param)
             args_types.append(param_type)
             if not arg_value.type.is_type_of(param_type):
                 self._log_error(
